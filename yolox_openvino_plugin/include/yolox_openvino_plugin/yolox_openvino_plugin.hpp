@@ -35,9 +35,7 @@ public:
 private:
   std::shared_ptr<yolox_openvino::YoloXOpenVINO> yolo;
 
-  Detection2DArray objects_to_detection2d_array(
-    cv::Mat frame,
-    const std::vector<yolox_openvino::Object> & objects);
+  Detection2DArray objects_to_detection2d_array(const std::vector<yolox_openvino::Object> &);
   detector2d_parameters::Params params_;
 };
 }

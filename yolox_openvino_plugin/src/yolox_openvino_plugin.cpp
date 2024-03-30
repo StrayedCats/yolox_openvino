@@ -26,31 +26,18 @@ void YoloxOpenVINO::init(const detector2d_parameters::ParamListener & param_list
 
 Detection2DArray YoloxOpenVINO::detect(const cv::Mat & image)
 {
-  std::cout << "YoloxOpenVINO::detect1" << std::endl;
-
   auto objects = yolo->inference(image);
   yolox_openvino::utils::draw_objects(image, objects);
-
-  if (!this->params_.debug) {
-    cv::imshow("yolox", image);
-    auto key = cv::waitKey(1);
-    if (key == 27) {
-      rclcpp::shutdown();
-    }
-  }
-
-  auto boxes = this->objects_to_detection2d_array(image, objects);
+  auto boxes = this->objects_to_detection2d_array(objects);
   return boxes;
 }
 
 Detection2DArray YoloxOpenVINO::objects_to_detection2d_array(
-  cv::Mat frame,
   const std::vector<yolox_openvino::Object> & objects)
 {
   Detection2DArray boxes;
   for (auto obj : objects) {
     vision_msgs::msg::Detection2D detection;
-
     vision_msgs::msg::ObjectHypothesisWithPose hypothesis;
     hypothesis.hypothesis.class_id = yolox_openvino::COCO_CLASSES[obj.label];
     hypothesis.hypothesis.score = obj.prob;
@@ -64,10 +51,8 @@ Detection2DArray YoloxOpenVINO::objects_to_detection2d_array(
 
     boxes.detections.push_back(detection);
   }
-
   return boxes;
 }
-
 }// namespace detector2d_plugins
 
 #include <pluginlib/class_list_macros.hpp>
